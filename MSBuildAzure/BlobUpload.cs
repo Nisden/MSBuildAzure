@@ -60,6 +60,11 @@
 
                 var blob = blobContainer.GetBlockBlobReference(file.Name);
 
+                using (Stream fileStream = file.OpenRead())
+                {
+                    blob.UploadFromStream(fileStream);
+                }
+
                 if (!string.IsNullOrEmpty(CacheControl))
                     blob.Properties.CacheControl = CacheControl;
 
@@ -67,11 +72,6 @@
                     blob.Properties.ContentType = ContentType;
 
                 blob.SetProperties();
-
-                using (Stream fileStream = file.OpenRead())
-                {
-                    blob.UploadFromStream(fileStream);
-                }
             }
 
             return true;
