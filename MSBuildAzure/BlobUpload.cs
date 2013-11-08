@@ -24,6 +24,12 @@
         [XmlAttribute]
         public bool CreateContainer { get; set; }
 
+        [XmlAttribute]
+        public string ContentType { get; set; }
+
+        [XmlAttribute]
+        public string CacheControl { get; set; }
+
         [Required]
         [XmlAttribute]
         public ITaskItem[] Files { get; set; }
@@ -53,6 +59,14 @@
                 Log.LogMessage("Uploading file: {0}", file.FullName);
 
                 var blob = blobContainer.GetBlockBlobReference(file.Name);
+
+                if (!string.IsNullOrEmpty(CacheControl))
+                    blob.Properties.CacheControl = CacheControl;
+
+                if (!string.IsNullOrEmpty(ContentType))
+                    blob.Properties.ContentType = ContentType;
+
+                blob.SetProperties();
 
                 using (Stream fileStream = file.OpenRead())
                 {
